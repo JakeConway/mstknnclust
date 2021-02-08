@@ -162,7 +162,7 @@ generate.knn <- function(edges.complete.graph, max.k, suggested.k) {
   #evaluo cada k desde 1 hasta n-1 para ver cual minimo k mantiene conectado al knn
 
 
-          k=1
+          k=2
 
           while(k <=(n-1)){
 
