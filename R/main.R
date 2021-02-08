@@ -190,19 +190,19 @@ generate.knn <- function(edges.complete.graph, max.k, suggested.k) {
 
 
             #Eliminar filas repetidas tanto en from, to, cost
-            arista_vecinos_unidas[[k]]=vecinos.final[!duplicated(vecinos.final), ]
+            arista_vecinos_unidas[[k-1]]=vecinos.final[!duplicated(vecinos.final), ]
 
 
                   #creo el knn. Para cada caso de k.
-                  grafo_knn[[k]]=igraph::graph.data.frame(d = arista_vecinos_unidas[[k]][,1:2], directed = FALSE)
+                  grafo_knn[[k-1]]=igraph::graph.data.frame(d = arista_vecinos_unidas[[k-1]][,1:2], directed = FALSE)
                   #eliminar aristas tipo lazos (o sea 1-3 y 3-1 dejar solo 1)
-                  grafo_knn[[k]]=igraph::simplify(grafo_knn[[k]], remove.loops = TRUE, remove.multiple = FALSE)
+                  grafo_knn[[k-1]]=igraph::simplify(grafo_knn[[k-1]], remove.loops = TRUE, remove.multiple = FALSE)
 
                   #determino si este k, produce un knn conectado
-                  grafo_knn_conectado[k]=igraph::is.connected(grafo_knn[[k]])
+                  grafo_knn_conectado[k-1]=igraph::is.connected(grafo_knn[[k-1]])
 
                   #Si este k esta conectado entonces ya no evaluo mas los k ya q es el minimo k que conecta
-                  if(grafo_knn_conectado[k]==TRUE){
+                  if(grafo_knn_conectado[k-1]==TRUE){
                     k=n
                   }else{
                     k=k+1
