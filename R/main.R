@@ -141,7 +141,7 @@ generate.complete.graph <-function(nodes.list, distance.matrix){
 #' @keywords graph
 #' @keywords knn
 #' @export
-generate.knn <- function(edges.complete.graph, suggested.k) {
+generate.knn <- function(edges.complete.graph, max.k, suggested.k) {
 
   grafo_knn=list()
   arista_vecinos_unidas=list()
@@ -153,6 +153,12 @@ generate.knn <- function(edges.complete.graph, suggested.k) {
   nodos<-c(nodos.object_i, nodos.object_j)
   nodos<-unique(nodos)
   n <-length(nodos)
+  
+  # limit k to max.k
+  if(n > max.k) {
+    n <- max.k+1
+  }
+  
   #evaluo cada k desde 1 hasta n-1 para ver cual minimo k mantiene conectado al knn
 
 
@@ -454,7 +460,7 @@ compute.costs.proximity.graph=function(graph.edges, distance.matrix){
 #' \item{ccgraph}{A object of class "igraph" which is a network with each connected components (cc) generated.}
 #' @author  Mario Inostroza-Ponta, Jorge Parraga-Alava, Pablo Moscato
 #' @keywords internal
-generate.intersections.mst.knn <- function(nodes.list, distance.matrix, suggested.k){
+generate.intersections.mst.knn <- function(nodes.list, distance.matrix, max.k, suggested.k){
 
 
   #            Order nodes.list to  edges tin complete graphs be ordered.
@@ -479,7 +485,7 @@ generate.intersections.mst.knn <- function(nodes.list, distance.matrix, suggeste
             ###grafo_mst_costo_total=compute.total.costs.mst(as.matrix(grafo_mst_aristas[,1:2]), distance.matrix)
 
             #            Generate kNN graph                #
-            calcula_knn=generate.knn(edges.complete.graph, suggested.k)
+            calcula_knn=generate.knn(edges.complete.graph, max.k, suggested.k)
             #grafo_knn_aristas=calcula_knn$edges.knn.graph
             grafo_knn_arbol=calcula_knn$knn.graph
             ###grafo_knn_costo_total=compute.total.costs.knn(grafo_knn_aristas, distance.matrix)
@@ -640,7 +646,7 @@ return(list(network=g_clusters, cnumber=final_grupos_num_clusters, cluster= vect
 #'      main=paste("MST-kNN \n Clustering solution \n Number of clusters=",results$cnumber,sep="" ))
 #'
 #' @export
-mst.knn <- function(distance.matrix, suggested.k){
+mst.knn <- function(distance.matrix, max.k, suggested.k){
 
   #      Validation of inputs     #
 
@@ -660,7 +666,7 @@ mst.knn <- function(distance.matrix, suggested.k){
                   subgraphs=1:nrow(distance.matrix)
 
                   #            Initialization               #
-                  inicio=generate.intersections.mst.knn(subgraphs, distance.matrix, suggested.k)
+                  inicio=generate.intersections.mst.knn(subgraphs, distance.matrix, max.k, suggested.k)
 
                   #          Recursivity on each CC           #
                   nodos_singletons=list()
@@ -700,7 +706,7 @@ mst.knn <- function(distance.matrix, suggested.k){
                                   for(y in 1:length(subgraphs)){
 
                                     #           Perform intersections on each subgraph with cc>1
-                                    componente=generate.intersections.mst.knn(subgraphs[[y]], distance.matrix, suggested.k)
+                                    componente=generate.intersections.mst.knn(subgraphs[[y]], distance.matrix, max.k, suggested.k)
 
                                     #           Store possible singletons nodes obtained after re-run mst.knn
                                     nodos_singletons=c(nodos_singletons, Filter(function(x) length(x)<=1, componente$subgraphs))
